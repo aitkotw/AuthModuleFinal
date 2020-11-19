@@ -68,7 +68,7 @@ router.post("/register", (req, res) => {
     User.findOne({ email }).then((user) => {
       //Check for User
       if (!user) {
-        errors.email = "User nort found";
+        errors.email = "Invalid Username/Password";
         return res.status(404).json(errors);
       }
   
@@ -87,7 +87,7 @@ router.post("/register", (req, res) => {
             });
           });
         } else {
-          errors.password = "Incorrect Password";
+          errors.password = "Invalid Username/Password";
           return res.status(400).json(errors);
         }
       });

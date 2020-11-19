@@ -10,7 +10,8 @@ const morgan = require('morgan')
 
 // Import Files
 const db = require("./config/keys").mongoURI;
-const Auth = require("./api/Auth");
+const Auth = require("./admin/Auth");
+const Vendor = require("./admin/Vendor");
 
 // Initialize Express 
 var app = express();
@@ -24,8 +25,6 @@ app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(morgan('combined',  { stream: accessLogStream }))
-
-
 
 //Database Connection
 mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true }, (err) => {
@@ -42,6 +41,7 @@ require("./config/passport.js")(passport); // Passport Config
 
 // API Routes
 app.use("/su/auth", Auth);
+app.use("/su/vendor", Vendor);
 
 // START THE SERVER
 app.listen(port, () => {
