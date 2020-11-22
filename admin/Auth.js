@@ -10,8 +10,8 @@ const router = express.Router();
 const User = require("../model/Admin");
 
 // Load Input validation
+const autoDataValidator = require("./../validation/autoValidateInput");
 const validateRegisterInput = require("./../validation/register");
-const validateLogInInput = require("./../validation/login");
 
 // @route   GET api/users/register
 // @desc    Register a User
@@ -53,9 +53,15 @@ router.post("/register", (req, res) => {
   // @desc    Returning The token
   // @access  Public
   router.post("/login", (req, res) => {
-    const { errors, isValid } = validateLogInInput(req.body);
+    // const { errors, isValid } = validateLogInInput(req.body);
   
-    //Check Validation
+    // //Check Validation
+
+
+    expectedBodyData = ['email', 'password']
+    requiredFields = ['email', 'password']
+    const { errors, isValid } = autoDataValidator(req.body, expectedBodyData, requiredFields);
+
     if (!isValid) {
       return res.status(400).json(errors);
     }
@@ -64,7 +70,7 @@ router.post("/register", (req, res) => {
     const password = req.body.password;
   
     //Find the User By Email
-    User.findOne({ email }).then((user) => {
+    User.findOne({ email }).select('_id email +password').then((user) => {
       //Check for User
       if (!user) {
         errors.email = "Invalid Username/Password";
@@ -89,7 +95,7 @@ router.post("/register", (req, res) => {
           errors.password = "Invalid Username/Password";
           return res.status(400).json(errors);
         }
-      });
+      }).catch((err) => console.log(err));
     });
   });
   

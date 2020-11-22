@@ -11,6 +11,11 @@ const VendorSchema = new Schema({
     type: String,
     required: true,
   },
+  password: {
+    type: String,
+    required: true,
+    select:false
+  }, 
   phone: {
     type: String,
     required: true,

@@ -1,6 +1,8 @@
 const express = require("express"); // call express
 const router = express.Router(); // get an instance of the express Router
 const passport = require("passport");
+const bcrypt = require("bcryptjs");
+const keys = require("./../config/keys");
 
 // Validation
 const validateVendorDetails = require("./../validation/vendorDetials");
@@ -27,8 +29,8 @@ router.get( "/", passport.authenticate("jwt", { session: false }), async (req, r
 // @access  Private
 router.post( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
 
-    expectedBodyData = ['name', 'email', 'phone', 'dbname']
-    requiredFields = ['name', 'email', 'phone', 'dbname']
+    expectedBodyData = ['name', 'email', 'password', 'phone', 'dbname']
+    requiredFields = ['name', 'email', 'password', 'phone', 'dbname']
     const { errors, isValid } = autoDataValidator(req.body, expectedBodyData, requiredFields);
 
     //const { errors, isValid } = validateVendorDetails(req.body);
@@ -46,17 +48,25 @@ router.post( "/", passport.authenticate("jwt", { session: false }), async (req, 
             const addVendor = new Vendor({
                 name: req.body.name,
                 email: req.body.email,
+                password: req.body.password,
                 phone: req.body.phone,
                 dbName: req.body.dbname,
             })
 
-            addVendor.save({}, (err, doc) =>{
-                if(!err){
-                    return res.status(200).json(doc);
-                } else {
-                    return res.status(400).json(err);
-                }
-            })
+            bcrypt.genSalt(10, (err, salt) => {
+                bcrypt.hash(addVendor.password, salt, (err, hash) => {
+                  if (err) throw err;
+                  addVendor.password = hash;
+                  addVendor.save({}, (err, doc) =>{
+                        if(!err){
+                            return res.status(200).json(doc);
+                        } else {
+                            return res.status(400).json(err);
+                        }
+                    })
+                });
+              });
+
         } else {
             return res.status(400).json({Message: 'Something Went Wrong'});
         }
