@@ -7,18 +7,20 @@ const keys = require("./../config/keys");
 const router = express.Router();
 
 // Load Admin Model
-const User = require("../model/Admin");
+const User = require("../model/Users");
 
 // Load Input validation
 const autoDataValidator = require("./../validation/autoValidateInput");
-const validateRegisterInput = require("./../validation/register");
+const Users = require("../model/Users");
 
 // @route   GET api/users/register
 // @desc    Register a User
 // @access  Public
 router.post("/register", (req, res) => {
-    const { errors, isValid } = validateRegisterInput(req.body);
-  
+    expectedBodyData = ['name', 'email', 'password', 'phone', 'role']
+    requiredFields = ['name', 'email', 'password', 'phone']
+    const { errors, isValid } = autoDataValidator(req.body, expectedBodyData, requiredFields);
+    
     //Check Validation
     if (!isValid) {
       return res.status(400).json(errors);
@@ -33,6 +35,8 @@ router.post("/register", (req, res) => {
           name: req.body.name,
           email: req.body.email,
           password: req.body.password,
+          phone: req.body.phone,
+          role: req.body.role,
         });
   
         bcrypt.genSalt(10, (err, salt) => {
@@ -48,16 +52,12 @@ router.post("/register", (req, res) => {
       }
     });
   });
-  
+
   // @route   GET api/users/login
   // @desc    Returning The token
   // @access  Public
   router.post("/login", (req, res) => {
-    // const { errors, isValid } = validateLogInInput(req.body);
-  
     // //Check Validation
-
-
     expectedBodyData = ['email', 'password']
     requiredFields = ['email', 'password']
     const { errors, isValid } = autoDataValidator(req.body, expectedBodyData, requiredFields);
@@ -75,15 +75,11 @@ router.post("/register", (req, res) => {
       if (!user) {
         errors.email = "Invalid Username/Password";
         return res.status(404).json(errors);
-      }
-  
+      }  
       //Check Password
       bcrypt.compare(password, user.password).then((isMatch) => {
-        if (isMatch) {
-          // res.json({ msg: "Success" });
-  
+        if (isMatch) {  
           const payload = { id: user.id, name: user.name };
-  
           // Sign Token
           jwt.sign(payload, keys.secretKey, { expiresIn: 3600 }, (err, token) => {
             res.json({
@@ -98,6 +94,18 @@ router.post("/register", (req, res) => {
       }).catch((err) => console.log(err));
     });
   });
-  
+
+// @route   GET api/users/login
+// @desc    Returning The token
+// @access  Public
+
+// router.get('/all', (req, res) => {
+//     Users.find((err, doc) => {
+//         if(!err){
+//             return res.status(400).json(doc);
+//         }
+//     })
+// })
+
+
   module.exports = router;
-  

@@ -1,7 +1,6 @@
 // Import Packages
 const express = require("express");
 const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
 const passport = require("passport");
 const helmet = require('helmet');
 var fs = require('fs')
@@ -9,9 +8,8 @@ var path = require('path')
 const morgan = require('morgan')
 
 // Import Files
-const db = require("./config/keys").mongoURI;
-const Auth = require("./admin/Auth");
-const Vendor = require("./admin/Vendor");
+const database = require('./config/setDatabase')
+const Auth = require("./Api/Auth");
 
 // Initialize Express 
 var app = express();
@@ -25,23 +23,14 @@ app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(morgan('combined',  { stream: accessLogStream }))
-
-//Database Connection
-mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true }, (err) => {
-    if(!err){
-        console.log('Connection Success')
-    } else{
-        console.log(err)
-    }
-});
+app.use(database)
 
 // Add Passport
 app.use(passport.initialize());
 require("./config/passport.js")(passport); // Passport Config
 
 // API Routes
-app.use("/su/auth", Auth);
-app.use("/su/vendor", Vendor);
+app.use("/api/auth", Auth);
 
 // START THE SERVER
 app.listen(port, () => {
