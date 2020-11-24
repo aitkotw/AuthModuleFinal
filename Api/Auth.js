@@ -2,23 +2,23 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("./../config/keys");
+const passport = require('passport')
 
 // Initialize Router
 const router = express.Router();
 
-// Load Admin Model
-const User = require("../model/Users");
+// Load User Model
+const Users = require("../model/Users");
 
 // Load Input validation
 const autoDataValidator = require("./../validation/autoValidateInput");
-const Users = require("../model/Users");
 
 // @route   GET api/users/register
 // @desc    Register a User
 // @access  Public
-router.post("/register", (req, res) => {
+router.post("/register", passport.authenticate("jwt", { session: false }), (req, res) => {
     expectedBodyData = ['name', 'email', 'password', 'phone', 'role']
-    requiredFields = ['name', 'email', 'password', 'phone']
+    requiredFields = ['name', 'email', 'password', 'phone', 'role']
     const { errors, isValid } = autoDataValidator(req.body, expectedBodyData, requiredFields);
     
     //Check Validation
@@ -26,12 +26,24 @@ router.post("/register", (req, res) => {
       return res.status(400).json(errors);
     }
   
-    User.findOne({ email: req.body.email }).then((user) => {
+    Users.findOne({ email: req.body.email }).select('+role').then((user) => {
+
+      //Only admin can register vendor
+      if(req.body.role === 'vendor' && req.user.role !== 'admin'){
+        errors.user = "Bad Request";
+        return res.status(401).json(errors);
+      } 
+      //Only vendor can register staff
+      else if (req.body.role === 'staff' && req.user.role !== 'vendor'){
+        errors.user = "Bad Request";
+        return res.status(401).json(errors);
+      } 
+
       if (user) {
         errors.email = "Email already Exists";
         return res.status(400).json(errors);
       } else {
-        const newUser = new User({
+        const newUser = new Users({
           name: req.body.name,
           email: req.body.email,
           password: req.body.password,
@@ -70,13 +82,17 @@ router.post("/register", (req, res) => {
     const password = req.body.password;
   
     //Find the User By Email
-    User.findOne({ email }).select('_id email +password').then((user) => {
+    Users.findOne({ email }).select('_id email +password isActive').then((user) => {
       //Check for User
       if (!user) {
         errors.email = "Invalid Username/Password";
         return res.status(404).json(errors);
-      }  
+      } else if (user.isActive === false) {
+        errors.user = "User Activation Required";
+        return res.status(401).json(errors);
+      }
       //Check Password
+      // console.log(user.isActive)
       bcrypt.compare(password, user.password).then((isMatch) => {
         if (isMatch) {  
           const payload = { id: user.id, name: user.name };
@@ -99,13 +115,13 @@ router.post("/register", (req, res) => {
 // @desc    Returning The token
 // @access  Public
 
-// router.get('/all', (req, res) => {
-//     Users.find((err, doc) => {
-//         if(!err){
-//             return res.status(400).json(doc);
-//         }
-//     })
-// })
+router.get('/all', (req, res) => {
+    Users.find((err, doc) => {
+        if(!err){
+            return res.status(400).json(doc);
+        }
+    })
+})
 
 
   module.exports = router;

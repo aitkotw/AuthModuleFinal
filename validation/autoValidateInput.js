@@ -18,6 +18,13 @@ const autoDataValidator = (data, expectedBodyData, requiredFields) => {
             errors.email = "Email is invalid";
         }
     } 
+
+    if('role' in data){
+        if (data.role !== 'vendor' && data.role !== 'staff') {
+            errors.user = "Bad request with invalid properties";
+        }
+    } 
+
     if('phone' in data){
         if (!Validator.isLength(data.phone, { min: 10, max: 10 })) {
             errors.phone = "Phone is invalid";

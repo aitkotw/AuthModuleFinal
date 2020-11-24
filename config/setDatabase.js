@@ -3,7 +3,7 @@ const db = require("./keys").mongoURI;
 
 const database = (req, res, next) => {
     //Database Connection
-    mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true }, (err) => {
+    mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true,  useFindAndModify: false }, (err) => {
         if(!err){
             console.log('Connection Success')
             next()

@@ -21,7 +21,7 @@ const UserSchema = new Schema({
     required: true,
   },
   isActive: {
-    type: String,
+    type: Boolean,
     default: false
   }, 
   role: {

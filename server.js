@@ -9,7 +9,9 @@ const morgan = require('morgan')
 
 // Import Files
 const database = require('./config/setDatabase')
-const Auth = require("./Api/Auth");
+const isAdmin = require('./config/middlewares/ensureIsAdmin')
+const Auth = require("./Api/Auth")
+const Admin = require("./Api/Admin")
 
 // Initialize Express 
 var app = express();
@@ -30,6 +32,8 @@ app.use(passport.initialize());
 require("./config/passport.js")(passport); // Passport Config
 
 // API Routes
+app.all('/api/su/*',passport.authenticate("jwt", { session: false }), isAdmin);
+app.use("/api/su/vendor", Admin);
 app.use("/api/auth", Auth);
 
 // START THE SERVER

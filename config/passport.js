@@ -12,7 +12,7 @@ module.exports = (passport) => {
   passport.use(
     new JwtStrategy(opts, (jwt_payload, done) => {
       //   console.log(jwt_payload);
-      Users.findById(jwt_payload.id)
+      Users.findById(jwt_payload.id).select('+role')
         .then((user) => {
           if (user) {
             return done(null, user);
