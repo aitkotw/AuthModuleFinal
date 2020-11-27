@@ -8,9 +8,9 @@ const ordersValidator = (data, expectedBodyData, requiredFields) => {
     expectedBodyData.forEach(key => {
         data[key] = !isEmpty(data[key]) ? data[key] : "";
     });
-
+    
     //Verify each order items 
-    if('items' in data){
+    if('items' in data && data.items !== ''){
         data.items.forEach(itemObj => {
             requiredItems.forEach(key => {
                 itemObj[key] = !isEmpty(itemObj[key]) ? itemObj[key] : "";
@@ -21,7 +21,9 @@ const ordersValidator = (data, expectedBodyData, requiredFields) => {
                 }
             });
         });
-    } 
+    } else {
+        errors.items = `Items field is required`;
+    }
     
 
     requiredFields.forEach(key => {

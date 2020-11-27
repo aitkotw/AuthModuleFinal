@@ -60,44 +60,34 @@ router.post( "/", passport.authenticate("jwt", { session: false }), async (req, 
 // @route   PUT su/vendor/
 // @desc    Update Vendor Data
 // @access  Private
-router.put( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
+//********************************************This is not Working Need to update individual order item */
+// router.put( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
 
-    expectedBodyData = ['billno', 'orderDate', 'customers', 'items', '_id']
-    requiredFields = ['_id'] 
-    const { errors, isValid } = ordersValidator(req.body, expectedBodyData, requiredFields);
+//     expectedBodyData = ['billno', 'orderDate', 'customer', 'items', '_id']
+//     requiredFields = ['_id', 'billno', 'orderDate', 'customer'] 
+//     const { errors, isValid } = ordersValidator(req.body, expectedBodyData, requiredFields);
 
-    //Check Validation
-    if (!isValid) {
-      return res.status(400).json(errors);
-    } 
+//     //Check Validation
+//     if (!isValid) {
+//       return res.status(400).json(errors);
+//     } 
 
-    await Orders.find({$and:[{name:req.body.name}, {vendor: req.user._id}, {_id:{$not:{$eq:req.body._id}}}]}, async (err, result) => {
-        if(!err){
-            if(result.length > 0){
-                return res.status(400).json({Message: 'Product already Exists'});
-            }
+//     const updateOrders = new Orders({
+//         billno: req.body.billno,
+//         orderData: req.body.orderData,
+//         customer: req.body.customer,
+//         items: req.body.items,
+//         vendor: req.user._id,
+//     })        
 
-            const updateOrders = new Orders({
-                billno: req.body.billno,
-                orderData: req.body.orderData,
-                customer: req.body.customer,
-                items: req.body.items,
-                vendor: req.user._id,
-            })        
-        
-            await Orders.findByIdAndUpdate(req.body._id, updateOrders, (err, result) => {
-                if(!err){
-                    return res.status(200).json(result);
-                } else {
-                    return res.status(400).json(err);
-                }
-            })
-           
-        } else {
-            return res.status(400).json({Message: 'Something Went Wrong'});
-        }
-    })
-});
+//     await Orders.findByIdAndUpdate(req.body._id, updateOrders, (err, result) => {
+//         if(!err){
+//             return res.status(200).json(result);
+//         } else {
+//             return res.status(400).json(err);
+//         }
+//     })
+// });
 
 
 // @route   DELETE su/vendor/

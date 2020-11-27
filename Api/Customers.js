@@ -29,8 +29,8 @@ router.get( "/", passport.authenticate("jwt", { session: false }), async (req, r
 // @desc    Create a new vendor
 // @access  Private
 router.post( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
-    expectedBodyData = ['name', 'cardno', 'phone', 'address', 'email', 'dob', 'gst', 'altPhone', ]
-    requiredFields = ['name', 'cardno', 'phone', 'address']
+    expectedBodyData = ['name', 'cardno', 'phone', 'address', 'email', 'dob', 'gst', 'altPhone', 'custType' ]
+    requiredFields = ['name', 'cardno', 'phone', 'address', 'custType']
     const { errors, isValid } = autoDataValidator(req.body, expectedBodyData, requiredFields);
 
     //const { errors, isValid } = validateVendorDetails(req.body);
@@ -46,6 +46,7 @@ router.post( "/", passport.authenticate("jwt", { session: false }), async (req, 
         address: req.body.address,
         email: req.body.email,
         dob: req.body.dob,
+        custType: req.body.custType,
         gst: req.body.gst,
         altPhone: req.body.altPhone,
         vendor: req.user._id,
@@ -67,8 +68,8 @@ router.post( "/", passport.authenticate("jwt", { session: false }), async (req, 
 // @access  Private
 router.put( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
 
-    expectedBodyData = ['name', 'cardno', 'phone', 'address', 'email', 'dob', 'gst', 'altPhone', '_id']
-    requiredFields = ['name', 'cardno', 'phone', 'address', '_id']
+    expectedBodyData = ['name', 'cardno', 'phone', 'address', 'email', 'dob', 'gst', 'altPhone','custType', '_id']
+    requiredFields = ['name', 'cardno', 'phone', 'address', 'custType', '_id']
     const { errors, isValid } = autoDataValidator(req.body, expectedBodyData, requiredFields);
 
     //Check Validation
@@ -83,6 +84,7 @@ router.put( "/", passport.authenticate("jwt", { session: false }), async (req, r
         address: req.body.address,
         email: req.body.email,
         dob: req.body.dob,
+        custType: req.body.custType,
         gst: req.body.gst,
         altPhone: req.body.altPhone,
         vendor: req.user._id,

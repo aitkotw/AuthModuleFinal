@@ -22,6 +22,10 @@ const CustomerSchema = new Schema({
     type: String,
     required: true,
   },
+  custType: {
+    type: String,
+    required: true,
+  },
   altPhone: {
     type: String,
   },
