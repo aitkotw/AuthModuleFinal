@@ -164,20 +164,4 @@ router.patch( "/", passport.authenticate("jwt", { session: false }), async (req,
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 module.exports = router;

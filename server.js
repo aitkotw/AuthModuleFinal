@@ -12,6 +12,9 @@ const database = require('./config/setDatabase')
 const isAdmin = require('./config/middlewares/ensureIsAdmin')
 const Auth = require("./Api/Auth")
 const Admin = require("./Api/Admin")
+const Products = require("./Api/Products")
+const Customers = require("./Api/Customers")
+const Orders = require("./Api/Orders")
 
 // Initialize Express 
 var app = express();
@@ -35,6 +38,9 @@ require("./config/passport.js")(passport); // Passport Config
 app.all('/api/su/*',passport.authenticate("jwt", { session: false }), isAdmin);
 app.use("/api/su/vendor", Admin);
 app.use("/api/auth", Auth);
+app.use("/api/products", Products);
+app.use("/api/customers", Customers);
+app.use("/api/orders", Orders);
 
 // START THE SERVER
 app.listen(port, () => {
