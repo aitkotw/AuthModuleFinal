@@ -22,6 +22,7 @@ const CustomerSchema = new Schema({
     type: String,
     required: true,
   },
+  //Type of customer service or order
   custType: {
     type: String,
     required: true,
