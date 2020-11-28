@@ -15,6 +15,9 @@ const Admin = require("./Api/Admin")
 const Products = require("./Api/Products")
 const Customers = require("./Api/Customers")
 const Orders = require("./Api/Orders")
+const Payments = require("./Api/Payments")
+const Services = require("./Api/Service")
+const Renewals = require("./Api/Renewals")
 
 // Initialize Express 
 var app = express();
@@ -41,6 +44,9 @@ app.use("/api/auth", Auth);
 app.use("/api/products", Products);
 app.use("/api/customers", Customers);
 app.use("/api/orders", Orders);
+app.use("/api/payments", Payments);
+app.use("/api/services", Services);
+app.use("/api/renewals", Renewals);
 
 // START THE SERVER
 app.listen(port, () => {
