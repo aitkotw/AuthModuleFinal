@@ -16,13 +16,19 @@ const autoDataValidator = require("./../validation/autoValidateInput");
 // @desc    Get All the Vendors
 // @access  Private
 router.get( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
-    await User.find({role:'vendor'}, (err, result) => {
+    try {
+        await User.find({role:'vendor'}, (err, result) => {
         if(!err){
             res.status(200).json(result)
         } else{
-            console.log(err)
+            //console.log(err)
+            res.status(400).json({error:'Unable to fetch Data'})
         }
     });
+    } catch (error) {
+        res.status(500).json({error:'Server Error'})
+    }
+    
 });
 
 // @route   POST su/vendor
@@ -39,38 +45,44 @@ router.post( "/", passport.authenticate("jwt", { session: false }), async (req, 
       return res.status(400).json(errors);
     }
 
-    await User.findOne({email: req.body.email}, (err, result) => {
-        if(!err){
-            if(result){
-                return res.status(400).json({Message: 'Email already Exists'});
-            }
+    try {
+        await User.findOne({email: req.body.email}, (err, result) => {
+            if(!err){
+                if(result){
+                    return res.status(400).json({error: 'Email already Exists'});
+                }
 
-            const addVendor = new User({
-                name: req.body.name,
-                email: req.body.email,
-                password: req.body.password,
-                phone: req.body.phone,
-                role: 'vendor',
-            })
+                const addVendor = new User({
+                    name: req.body.name,
+                    email: req.body.email,
+                    password: req.body.password,
+                    phone: req.body.phone,
+                    role: 'vendor',
+                })
 
-            bcrypt.genSalt(10, (err, salt) => {
-                bcrypt.hash(addVendor.password, salt, (err, hash) => {
-                  if (err) throw err;
-                  addVendor.password = hash;
-                  addVendor.save({}, (err, doc) =>{
-                        if(!err){
-                            return res.status(200).json(doc);
-                        } else {
-                            return res.status(400).json(err);
-                        }
-                    })
+                bcrypt.genSalt(10, (err, salt) => {
+                    bcrypt.hash(addVendor.password, salt, (err, hash) => {
+                    if (err) throw err;
+                    addVendor.password = hash;
+                    addVendor.save({}, (err, doc) =>{
+                            if(!err){
+                                return res.status(200).json(doc);
+                            } else {
+                                return res.status(400).json({error:'Unable to create user'});
+                            }
+                        })
+                    });
                 });
-              });
 
-        } else {
-            return res.status(400).json({Error: 'Something Went Wrong'});
-        }
-    })
+            } else {
+                return res.status(400).json({error: 'Something Went Wrong'});
+            }
+        })
+    } catch (error) {
+        res.status(500).json({error:'Server Error'})
+    }
+
+    
 });
 
 
@@ -91,7 +103,7 @@ router.put( "/", passport.authenticate("jwt", { session: false }), async (req, r
     await User.find({$or:[{_id: req.body._id},{email: req.body.email}]}, async (err, result) => {
         if(!err){
             if(result.length > 1){
-                return res.status(400).json({Message: 'Email already Exists', Data: result.length});
+                return res.status(400).json({error: 'Email already Exists'});
             }
 
             const updateVendor = ({
@@ -104,11 +116,11 @@ router.put( "/", passport.authenticate("jwt", { session: false }), async (req, r
                 if(!err){
                     return res.status(200).json(result);
                 } else {
-                    return res.status(400).json(err);
+                    return res.status(400).json({error:'Unable to update User'});
                 }
             })
         } else {
-            return res.status(400).json({Message: 'Something Went Wrong'});
+            return res.status(400).json({error: 'Something Went Wrong'});
         }
     })
 });
@@ -127,13 +139,19 @@ router.delete( "/", passport.authenticate("jwt", { session: false }), async (req
         return res.status(400).json(errors);
     } 
 
-    await User.findByIdAndRemove(req.body._id, (err, result) => {
-        if(!err){
-            return res.status(200).json({Message: 'Data Deleted Successfully'});
-        } else {
-            return res.status(400).json({Error: 'Something Went Wrong'});
-        }
-    })
+    try {
+        await User.findByIdAndRemove(req.body._id, (err, result) => {
+            if(!err){
+                return res.status(200).json({message: 'Data Deleted Successfully'});
+            } else {
+                return res.status(400).json({error: 'Unable to Delete User'});
+            }
+        })
+    } catch (error) {
+        res.status(500).json({error:'Something Went Wrong'})
+    }
+
+
 });
 
 
@@ -154,13 +172,18 @@ router.patch( "/", passport.authenticate("jwt", { session: false }), async (req,
         isActive: req.body.status,
     })
 
-    await User.findByIdAndUpdate(req.body._id, activateVendor, (err, doc) => {
-        if(!err){
-            return res.status(200).json(doc);
-        } else {
-            return res.status(400).json({Error: 'Something Went Wrong'});
-        }
-    })
+    try {
+        await User.findByIdAndUpdate(req.body._id, activateVendor, (err, doc) => {
+            if(!err){
+                return res.status(200).json(doc);
+            } else {
+                return res.status(400).json({error: 'Unable to activate/deactivate user'});
+            }
+        })
+    } catch (error) {
+        res.status(500).json({error:'Something Went Wrong'})
+    }
+
 });
 
 

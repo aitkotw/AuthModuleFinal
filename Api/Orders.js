@@ -15,13 +15,19 @@ const ordersValidator = require("./../validation/validateOrders");
 // @desc    Get All the products
 // @access  Private
 router.get( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
-    await Orders.find({vendor:req.user._id}, (err, result) => {
-        if(!err){
-            res.status(200).json(result)
-        } else{
-            console.log(err)
-        }
-    });
+    try {
+        await Orders.find({vendor:req.user._id}, (err, result) => {
+            if(!err){
+                res.status(200).json(result)
+            } else{
+                // console.log(err)
+                return res.status(400).json({error:'Unable to fetch Data'})
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({error:'Server Error'})
+    }
+    
 });
 
 // @route   POST /products
@@ -47,13 +53,18 @@ router.post( "/", passport.authenticate("jwt", { session: false }), async (req, 
     })
     console.log(addOrders)
 
-    addOrders.save({}, (err, doc) =>{
-        if(!err){
-            return res.status(200).json(doc);
-        } else {
-            return res.status(400).json(err);
-        }
-    })
+    try {
+        addOrders.save({}, (err, doc) =>{
+            if(!err){
+                return res.status(200).json(doc);
+            } else {
+                return res.status(400).json({error:'Unable to save data'});
+            }
+        })
+    } catch (error) {
+        return res.status(500).json({error:'Server Error'})
+    }
+    
 });
 
 
@@ -103,13 +114,18 @@ router.delete( "/", passport.authenticate("jwt", { session: false }), async (req
         return res.status(400).json(errors);
     } 
 
-    await Orders.findOneAndRemove({_id:req.body._id, vendor: {$eq:req.user._id}}, (err, result) => {
-        if(!err){
-            return res.status(200).json({Message: 'Data Deleted Successfully'});
-        } else {
-            return res.status(400).json({Error: 'Something Went Wrong'});
-        }
-    })
+    try {
+        await Orders.findOneAndRemove({_id:req.body._id, vendor: {$eq:req.user._id}}, (err, result) => {
+            if(!err){
+                return res.status(200).json({message: 'Data Deleted Successfully'});
+            } else {
+                return res.status(400).json({error: 'Something Went Wrong'});
+            }
+        })
+    } catch (error) {
+        return res.status(500).json({error:'Server Error'})
+    }
+    
 });
 
 

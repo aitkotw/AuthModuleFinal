@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
 const router = express.Router();
 
 // Load Admin Model
-const Customer = require("../model/Customers");
+const Leads = require("../model/Leads");
 
 // Load Input validation
 const autoDataValidator = require("./../validation/autoValidateInput");
@@ -16,27 +16,26 @@ const autoDataValidator = require("./../validation/autoValidateInput");
 // @desc    Get All the products
 // @access  Private
 router.get( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
-    
     try {
-        await Customer.find({vendor:req.user._id}, (err, result) => {
+        await Leads.find({vendor:req.user._id}, (err, result) => {
             if(!err){
-                res.status(200).json(result)
+                return res.status(200).json(result)
             } else{
-                console.log({error:'Unable to fetch Data'})
+                return res.status(400).json({erro :'Unable to fetch data'})
             }
         });
     } catch (error) {
         res.status(500).json({error:'Server Error'})
     }
-    
+
 });
 
 // @route   POST /products
 // @desc    Create a new vendor
 // @access  Private
 router.post( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
-    expectedBodyData = ['name', 'cardno', 'phone', 'address', 'email', 'dob', 'gst', 'altPhone', 'custType' ]
-    requiredFields = ['name', 'cardno', 'phone', 'address', 'custType']
+    expectedBodyData = ['name', 'phone', 'address', 'altPhone']
+    requiredFields = ['name', 'phone']
     const { errors, isValid } = autoDataValidator(req.body, expectedBodyData, requiredFields);
 
     //const { errors, isValid } = validateVendorDetails(req.body);
@@ -44,33 +43,28 @@ router.post( "/", passport.authenticate("jwt", { session: false }), async (req, 
     if (!isValid) {
       return res.status(400).json(errors);
     }
-    
-    const addCustomer = new Customer({
-        cardno: req.body.cardno,
+
+    const addProduct = new Leads({
         name: req.body.name,
         phone: req.body.phone,
-        address: req.body.address,
         email: req.body.email,
-        dob: req.body.dob,
-        custType: req.body.custType,
-        gst: req.body.gst,
+        address: req.body.address,
         altPhone: req.body.altPhone,
         vendor: req.user._id,
     })
 
     try {
-        await addCustomer.save({}, (err, doc) =>{
+        addProduct.save({}, (err, doc) =>{
             if(!err){
                 return res.status(200).json(doc);
             } else {
-                return res.status(400).json({error:'Unable to save user'});
+                return res.status(400).json({error:'Unable to save Data'});
             }
         })
     } catch (error) {
-        return res.status(500).json({error:'Server Error'});
+        return res.status(500).json({error:'Server Error'})
     }
-  
-
+    
 });
 
 
@@ -79,8 +73,8 @@ router.post( "/", passport.authenticate("jwt", { session: false }), async (req, 
 // @access  Private
 router.put( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
 
-    expectedBodyData = ['name', 'cardno', 'phone', 'address', 'email', 'dob', 'gst', 'altPhone','custType', '_id']
-    requiredFields = ['name', 'cardno', 'phone', 'address', 'custType', '_id']
+    expectedBodyData = ['name', 'phone', 'address', 'altPhone', '_id']
+    requiredFields = ['name', 'phone', '_id'] 
     const { errors, isValid } = autoDataValidator(req.body, expectedBodyData, requiredFields);
 
     //Check Validation
@@ -88,32 +82,27 @@ router.put( "/", passport.authenticate("jwt", { session: false }), async (req, r
       return res.status(400).json(errors);
     } 
 
-    const updateProduct = ({
-        cardno: req.body.cardno,
+    const updateLeads = new Leads({
         name: req.body.name,
         phone: req.body.phone,
-        address: req.body.address,
         email: req.body.email,
-        dob: req.body.dob,
-        custType: req.body.custType,
-        gst: req.body.gst,
+        address: req.body.address,
         altPhone: req.body.altPhone,
         vendor: req.user._id,
     })
 
     try {
-        await Customer.findByIdAndUpdate(req.body._id, updateProduct, (err, result) => {
+        await Leads.findByIdAndUpdate(req.body._id, updateLeads, (err, result) => {
             if(!err){
                 return res.status(200).json(result);
             } else {
-                return res.status(400).json({error:'Unable to update user'});
+                return res.status(400).json({error:'Unable to update Data'});
             }
         })
     } catch (error) {
-        return res.status(500).json({error:'Server Error'});
+        return res.status(500).json({error:'Server Error'})
     }
     
-
 });
 
 
@@ -131,17 +120,17 @@ router.delete( "/", passport.authenticate("jwt", { session: false }), async (req
     } 
 
     try {
-        await Customer.findOneAndRemove({_id:req.body._id, vendor: req.user._id}, (err, result) => {
+        await Leads.findOneAndRemove({_id:req.body._id, vendor: {$eq:req.user._id}}, (err, result) => {
             if(!err){
-                return res.status(200).json({Message: 'Data Deleted Successfully'});
+                return res.status(200).json({message: 'Data Deleted Successfully'});
             } else {
-                return res.status(400).json({Error: 'Something Went Wrong'});
+                return res.status(400).json({error: 'Something Went Wrong'});
             }
         })
     } catch (error) {
-        return res.status(500).json({error:'Server Error'});
+        return res.status(500).json({error:'server error'})
     }
-
+    
 });
 
 

@@ -16,13 +16,19 @@ const autoDataValidator = require("./../validation/autoValidateInput");
 // @desc    Get All the products
 // @access  Private
 router.get( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
-    await Product.find({vendor:req.user._id}, (err, result) => {
-        if(!err){
-            res.status(200).json(result)
-        } else{
-            console.log(err)
-        }
-    });
+    try {
+        await Product.find({vendor:req.user._id}, (err, result) => {
+            if(!err){
+                res.status(200).json(result)
+            } else{
+                // console.log(err)
+                return res.status(400).json({error:'Unable to fetch data'})
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({error:'Server Error'})
+    }
+    
 });
 
 // @route   POST /products
@@ -39,34 +45,39 @@ router.post( "/", passport.authenticate("jwt", { session: false }), async (req, 
       return res.status(400).json(errors);
     }
 
-    await Product.findOne({$and:[{name:req.body.name}, {vendor: req.user._id}]}, (err, result) => {
-        if(!err){
-            if(result){
-                return res.status(400).json({Message: 'Product name already Exists'});
-            }
-
-            const addProduct = new Product({
-                name: req.body.name,
-                sr_no: req.body.sr_no,
-                hsn: req.body.hsn,
-                warranty: req.body.warranty,
-                amount: req.body.amount,
-                tax: req.body.tax,
-                vendor: req.user._id,
-            })
-
-            addProduct.save({}, (err, doc) =>{
-                if(!err){
-                    return res.status(200).json(doc);
-                } else {
-                    return res.status(400).json(err);
+    try {
+        await Product.findOne({$and:[{name:req.body.name}, {vendor: req.user._id}]}, (err, result) => {
+            if(!err){
+                if(result){
+                    return res.status(400).json({error: 'Product name already Exists'});
                 }
-            })
 
-        } else {
-            return res.status(400).json({Error: 'Product Already Exits'});
-        }
-    })
+                const addProduct = new Product({
+                    name: req.body.name,
+                    sr_no: req.body.sr_no,
+                    hsn: req.body.hsn,
+                    warranty: req.body.warranty,
+                    amount: req.body.amount,
+                    tax: req.body.tax,
+                    vendor: req.user._id,
+                })
+
+                addProduct.save({}, (err, doc) =>{
+                    if(!err){
+                        return res.status(200).json(doc);
+                    } else {
+                        return res.status(400).json({error:'unable to save data'});
+                    }
+                })
+
+            } else {
+                return res.status(400).json({error: 'Unknown Error'});
+            }
+        })
+    } catch (error) {
+        return res.status(500).json({error:'Server Error'})
+    }
+   
 });
 
 
@@ -84,34 +95,39 @@ router.put( "/", passport.authenticate("jwt", { session: false }), async (req, r
       return res.status(400).json(errors);
     } 
 
-    await Product.find({$and:[{name:req.body.name}, {vendor: req.user._id}, {_id:{$not:{$eq:req.body._id}}}]}, async (err, result) => {
-        if(!err){
-            if(result.length > 0){
-                return res.status(400).json({Message: 'Product already Exists'});
-            }
-
-            const updateProduct = ({
-                name: req.body.name,
-                sr_no: req.body.sr_no,
-                hsn: req.body.hsn,
-                warranty: req.body.warranty,
-                amount: req.body.amount,
-                tax: req.body.tax,
-                vendor: req.user._id,
-            })
-        
-            await Product.findByIdAndUpdate(req.body._id, updateProduct, (err, result) => {
-                if(!err){
-                    return res.status(200).json(result);
-                } else {
-                    return res.status(400).json(err);
+    try {
+        await Product.find({$and:[{name:req.body.name}, {vendor: req.user._id}, {_id:{$not:{$eq:req.body._id}}}]}, async (err, result) => {
+            if(!err){
+                if(result.length > 0){
+                    return res.status(400).json({error: 'Product already Exists'});
                 }
-            })
-           
-        } else {
-            return res.status(400).json({Message: 'Something Went Wrong'});
-        }
-    })
+
+                const updateProduct = new Product({
+                    name: req.body.name,
+                    sr_no: req.body.sr_no,
+                    hsn: req.body.hsn,
+                    warranty: req.body.warranty,
+                    amount: req.body.amount,
+                    tax: req.body.tax,
+                    vendor: req.user._id,
+                })
+            
+                await Product.findByIdAndUpdate(req.body._id, updateProduct, (err, result) => {
+                    if(!err){
+                        return res.status(200).json(result);
+                    } else {
+                        return res.status(400).json({error:'Unabvle to update product'});
+                    }
+                })
+            
+            } else {
+                return res.status(400).json({error: 'Something Went Wrong'});
+            }
+        })
+    } catch (error) {
+        return res.status(500).json({error:'Server Error'})
+    }
+    
 });
 
 
@@ -128,13 +144,19 @@ router.delete( "/", passport.authenticate("jwt", { session: false }), async (req
         return res.status(400).json(errors);
     } 
 
-    await Product.findOneAndRemove({_id:req.body._id, vendor: {$eq:req.user._id}}, (err, result) => {
-        if(!err){
-            return res.status(200).json({Message: 'Data Deleted Successfully'});
-        } else {
-            return res.status(400).json({Error: 'Something Went Wrong'});
-        }
-    })
+    try {
+        await Product.findOneAndRemove({_id:req.body._id, vendor: {$eq:req.user._id}}, (err, result) => {
+            if(!err){
+                return res.status(200).json({message: 'Data Deleted Successfully'});
+            } else {
+                return res.status(400).json({error: 'Something Went Wrong'});
+            }
+        })
+    } catch (error) {
+        return res.status(500).json({error:'Server Error'})
+    }
+
+    
 });
 
 

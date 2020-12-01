@@ -18,6 +18,7 @@ const Orders = require("./Api/Orders")
 const Payments = require("./Api/Payments")
 const Services = require("./Api/Service")
 const Renewals = require("./Api/Renewals")
+const Leads = require("./Api/Leads")
 
 // Initialize Express 
 var app = express();
@@ -47,6 +48,7 @@ app.use("/api/orders", Orders);
 app.use("/api/payments", Payments);
 app.use("/api/services", Services);
 app.use("/api/renewals", Renewals);
+app.use("/api/leads", Leads);
 
 // START THE SERVER
 app.listen(port, () => {

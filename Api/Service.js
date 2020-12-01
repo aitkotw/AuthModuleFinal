@@ -17,13 +17,20 @@ const autoDataValidator = require("./../validation/autoValidateInput");
 // @desc    Get All the Services
 // @access  Private
 router.get( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
-    await Services.find({vendor:req.user._id}, (err, result) => {
-        if(!err){
-            res.status(200).json(result)
-        } else{
-            console.log(err)
-        }
-    });
+    try {
+        await Services.find({vendor:req.user._id}, (err, result) => {
+            if(!err){
+                res.status(200).json(result)
+            } else{
+                // console.log(err)
+                return res.status(400).json({error:'Unable to fetch data'})
+
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({error:'Server Error'})
+    }
+    
 });
 
 // @route   POST /services
@@ -47,13 +54,18 @@ router.post( "/", passport.authenticate("jwt", { session: false }), async (req, 
         vendor: req.user._id,
     })
 
-    addService.save({}, (err, doc) =>{
-        if(!err){
-            return res.status(200).json(doc);
-        } else {
-            return res.status(400).json(err);
-        }
-    })
+    try {
+        addService.save({}, (err, doc) =>{
+            if(!err){
+                return res.status(200).json(doc);
+            } else {
+                return res.status(400).json({error:'unable to save data'});
+            }
+        })
+    } catch (error) {
+        return res.status(500).json({error:'Server Error'})
+    }
+    
 });
 
 
@@ -78,13 +90,18 @@ router.put( "/", passport.authenticate("jwt", { session: false }), async (req, r
         vendor: req.user._id,
     })
 
-    await Services.findByIdAndUpdate(req.body._id, updateService, (err, result) => {
-        if(!err){
-            return res.status(200).json(result);
-        } else {
-            return res.status(400).json(err);
-        }
-    })
+    try {
+        await Services.findByIdAndUpdate(req.body._id, updateService, (err, result) => {
+            if(!err){
+                return res.status(200).json(result);
+            } else {
+                return res.status(400).json({error:'unable to update data'});
+            }
+        })
+    } catch (error) {
+        return res.status(500).json({error:'Server Error'})
+    }
+    
 });
 
 
@@ -101,13 +118,18 @@ router.delete( "/", passport.authenticate("jwt", { session: false }), async (req
         return res.status(400).json(errors);
     } 
 
-    await Services.findOneAndRemove({_id:req.body._id, vendor: {$eq:req.user._id}}, (err, result) => {
-        if(!err){
-            return res.status(200).json({Message: 'Data Deleted Successfully'});
-        } else {
-            return res.status(400).json({Error: 'Something Went Wrong'});
-        }
-    })
+    try {
+        await Services.findOneAndRemove({_id:req.body._id, vendor: {$eq:req.user._id}}, (err, result) => {
+            if(!err){
+                return res.status(200).json({message: 'Data Deleted Successfully'});
+            } else {
+                return res.status(400).json({error: 'unable to update data'});
+            }
+        })
+    } catch (error) {
+        return res.status(500).json({error:'Server Error'})
+    }
+    
 });
 
 
@@ -115,13 +137,20 @@ router.delete( "/", passport.authenticate("jwt", { session: false }), async (req
 // @desc    Get All the completed Services
 // @access  Private
 router.get( "/completed", passport.authenticate("jwt", { session: false }), async (req, res) =>{
-    await ServiceCompleted.find({vendor:req.user._id}, (err, result) => {
-        if(!err){
-            res.status(200).json(result)
-        } else{
-            console.log(err)
-        }
-    });
+    try {
+        await ServiceCompleted.find({vendor:req.user._id}, (err, result) => {
+            if(!err){
+                res.status(200).json(result)
+            } else{
+                // console.log(err)
+                return res.status(400).json({error:'Unable to fetch data'})
+
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({error:'Server Error'})
+    }
+    
 });
 
 // @route   GET /services/completed
@@ -137,13 +166,21 @@ router.get( "/completed/customer", passport.authenticate("jwt", { session: false
       return res.status(400).json(errors);
     }
 
-    await ServiceCompleted.find({vendor:req.user._id, customer:req.body.customer}, (err, result) => {
-        if(!err){
-            res.status(200).json(result)
-        } else{
-            console.log(err)
-        }
-    });
+    try {
+        await ServiceCompleted.find({vendor:req.user._id, customer:req.body.customer}, (err, result) => {
+            if(!err){
+                res.status(200).json(result)
+            } else{
+                // console.log(err)
+                return res.status(400).json({error:'Unable to fetch data'})
+
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({error:'Server Error'})
+    }
+
+    
 });
 
 
@@ -171,13 +208,18 @@ router.post( "/completed", passport.authenticate("jwt", { session: false }), asy
         vendor: req.user._id,
     })
 
-    addCompletedService.save({}, (err, doc) =>{
-        if(!err){
-            return res.status(200).json(doc);
-        } else {
-            return res.status(400).json(err);
-        }
-    })
+    try {
+        addCompletedService.save({}, (err, doc) =>{
+            if(!err){
+                return res.status(200).json(doc);
+            } else {
+                return res.status(400).json({error:'unable to save data'});
+            }
+        })
+    } catch (error) {
+        return res.status(500).json({error:'Server Error'})
+    }
+    
 });
 
 //********************************************* Don't Need Put or Delete Request for this ****************************/
@@ -225,13 +267,18 @@ router.delete( "/completed", passport.authenticate("jwt", { session: false }), a
         return res.status(400).json(errors);
     } 
 
-    await ServiceCompleted.findOneAndRemove({_id:req.body._id, vendor: {$eq:req.user._id}}, (err, result) => {
-        if(!err){
-            return res.status(200).json({Message: 'Data Deleted Successfully'});
-        } else {
-            return res.status(400).json({Error: 'Something Went Wrong'});
-        }
-    })
+    try {
+        await ServiceCompleted.findOneAndRemove({_id:req.body._id, vendor: {$eq:req.user._id}}, (err, result) => {
+            if(!err){
+                return res.status(200).json({message: 'Data Deleted Successfully'});
+            } else {
+                return res.status(400).json({error: 'Something Went Wrong'});
+            }
+        })
+    } catch (error) {
+        return res.status(500).json({error:'Server Error'})
+    }
+    
 });
 
 module.exports = router;
