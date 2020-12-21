@@ -7,6 +7,11 @@ const PaymentsSchema = new Schema({
     type: String,
     required: true,
   },
+  order_id: {
+    type: Schema.Types.ObjectId,
+    ref : 'Orders',
+    required: true
+  },
   pDate: {
     type: String,
     required: true,

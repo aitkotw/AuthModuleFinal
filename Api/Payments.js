@@ -35,8 +35,8 @@ router.get( "/", passport.authenticate("jwt", { session: false }), async (req, r
 // @desc    Create a new vendor
 // @access  Private
 router.post( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
-    expectedBodyData = ['name', 'pDate', 'amount', 'purpose']
-    requiredFields = ['name', 'pDate', 'amount', 'purpose']
+    expectedBodyData = ['name', 'order_id', 'pDate', 'amount', 'purpose']
+    requiredFields = ['name', 'order_id', 'pDate', 'amount', 'purpose']
     const { errors, isValid } = autoDataValidator(req.body, expectedBodyData, requiredFields);
 
     //const { errors, isValid } = validateVendorDetails(req.body);
@@ -47,6 +47,7 @@ router.post( "/", passport.authenticate("jwt", { session: false }), async (req, 
 
     const addPayment = new Payments({
         name: req.body.name,
+        order_id: req.body.order_id,
         pDate: req.body.pDate,
         amount: req.body.amount,
         purpose: req.body.purpose,
@@ -73,8 +74,8 @@ router.post( "/", passport.authenticate("jwt", { session: false }), async (req, 
 // @access  Private
 router.put( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
 
-    expectedBodyData = ['name', 'pDate', 'amount', 'purpose', '_id']
-    requiredFields = ['name', 'pDate', 'amount', 'purpose', '_id'] 
+    expectedBodyData = ['name', 'order_id', 'pDate', 'amount', 'purpose', '_id']
+    requiredFields = ['name', 'order_id', 'pDate', 'amount', 'purpose', '_id'] 
     const { errors, isValid } = autoDataValidator(req.body, expectedBodyData, requiredFields);
 
     //Check Validation
@@ -84,6 +85,7 @@ router.put( "/", passport.authenticate("jwt", { session: false }), async (req, r
 
     const updatePayment = ({
         name: req.body.name,
+        order_id: req.body.order_id,
         pDate: req.body.pDate,
         amount: req.body.amount,
         purpose: req.body.purpose,

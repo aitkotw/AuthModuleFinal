@@ -58,7 +58,7 @@ router.post( "/", passport.authenticate("jwt", { session: false }), async (req, 
             if(!err){
                 return res.status(200).json(doc);
             } else {
-                return res.status(400).json({error:'Unable to save data'});
+                return res.status(400).json(err);
             }
         })
     } catch (error) {

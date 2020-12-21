@@ -97,7 +97,7 @@ router.post("/register", passport.authenticate("jwt", { session: false }), (req,
         if (isMatch) {  
           const payload = { id: user.id, name: user.name };
           // Sign Token
-          jwt.sign(payload, keys.secretKey, { expiresIn: 3600 }, (err, token) => {
+          jwt.sign(payload, keys.secretKey, { expiresIn: 21600 }, (err, token) => {
             res.json({
               sucess: true,
               token: `Bearer ${token}`,
