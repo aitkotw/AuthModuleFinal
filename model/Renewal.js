@@ -16,6 +16,11 @@ const RenewalSchema = new Schema({
     ref : 'Users',
     required: true,
   },
+  order_id:{
+    type: Schema.Types.ObjectId,
+    ref : 'Orders',
+    required: true
+  },
   vendor: {
     type: Schema.Types.ObjectId,
     ref : 'Users',

@@ -6,6 +6,8 @@ const router = express.Router();
 
 // Load Admin Model
 const Orders = require("../model/Orders");
+const Services = require("../model/Service");
+const Renewals = require("../model/Renewal");
 
 // Load Input validation
 const ordersValidator = require("./../validation/validateOrders");
@@ -34,8 +36,8 @@ router.get( "/", passport.authenticate("jwt", { session: false }), async (req, r
 // @desc    Create a new vendor
 // @access  Private
 router.post( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
-    expectedBodyData = ['billno', 'orderDate', 'customer']
-    requiredFields = ['billno', 'orderDate', 'customer']
+    expectedBodyData = ['billno', 'name', 'orderDate', 'customer']
+    requiredFields = ['billno', 'name','orderDate', 'customer']
     const { errors, isValid } = ordersValidator(req.body, expectedBodyData, requiredFields);
 
     //const { errors, isValid } = validateVendorDetails(req.body);
@@ -48,14 +50,64 @@ router.post( "/", passport.authenticate("jwt", { session: false }), async (req, 
         billno: req.body.billno,
         orderData: req.body.orderData,
         customer: req.body.customer,
+        name: req.body.name,
         items: req.body.items,
         vendor: req.user._id,
     })
     console.log(addOrders)
 
     try {
-        addOrders.save({}, (err, doc) =>{
+        addOrders.save({}, async (err, doc) =>{
             if(!err){
+                //Order Added Succesfully
+                //TODO: Add Service and Add 
+                
+                let sDate = new Date().setMonth(new Date().getMonth() + 3)
+                let rDate = new Date().setMonth(new Date().getMonth() + 12)
+
+                const newService = new Services({
+                    name: req.body.name,
+                    sDate: sDate,
+                    order_id: doc._id,
+                    customer: req.body.customer,
+                    vendor: req.user._id,
+                })
+
+                const newRenewal = new Renewals({
+                    name: req.body.name,
+                    rDate: rDate,
+                    order_id: doc._id,
+                    customer: req.body.customer,
+                    vendor: req.user._id,
+                })
+
+                //Add Service 
+                try {
+                    newService.save({}, (err, doc) => {
+                        if(!err){
+                            console.log('Service Added Successfully')
+                        } else {
+                            console.log('Service Not Added')
+                        }
+                    })
+                } catch (error) {
+                    console.log('Something Went Wrong Service')
+                }
+
+                //Add Renewal
+                try {
+                    newRenewal.save({}, (err, doc) => {
+                        if(!err){
+                            console.log('Renewal Added Successfully')
+                        } else {
+                            console.log(err)
+                        }
+                    })
+                } catch (error) {
+                    console.log('Something Went Wrong Renewal')
+                }
+
+                //Return Order Document 
                 return res.status(200).json(doc);
             } else {
                 return res.status(400).json(err);

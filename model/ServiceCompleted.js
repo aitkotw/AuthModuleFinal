@@ -11,7 +11,7 @@ const ServiceCompletedSchema = new Schema({
     type: String,
     required: true,
   },
-  orderId: {
+  order_id: {
     type: String,
   },
   amount: {

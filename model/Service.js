@@ -11,8 +11,9 @@ const ServiceSchema = new Schema({
     type: String,
     required: true,
   },
-  orderId: {
-    type: String,
+  order_id: {
+    type: Schema.Types.ObjectId,
+    ref : 'Orders',
   },
   customer: {
     type: Schema.Types.ObjectId,

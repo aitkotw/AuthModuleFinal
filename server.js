@@ -19,6 +19,8 @@ const Payments = require("./Api/Payments")
 const Services = require("./Api/Service")
 const Renewals = require("./Api/Renewals")
 const Leads = require("./Api/Leads")
+const Links = require("./Api/LinkGen")
+
 
 // Initialize Express 
 var app = express();
@@ -49,6 +51,7 @@ app.use("/api/payments", Payments);
 app.use("/api/services", Services);
 app.use("/api/renewals", Renewals);
 app.use("/api/leads", Leads);
+app.use("/api/links", Links);
 
 // START THE SERVER
 app.listen(port, () => {

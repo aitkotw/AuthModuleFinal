@@ -36,8 +36,8 @@ router.get( "/", passport.authenticate("jwt", { session: false }), async (req, r
 // @desc    Create a new Service
 // @access  Private
 router.post( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
-    expectedBodyData = ['name', 'rDate', 'customer']
-    requiredFields = ['name', 'rDate', 'customer']
+    expectedBodyData = ['name', 'order_id', 'rDate', 'customer']
+    requiredFields = ['name', 'order_id', 'rDate', 'customer']
     const { errors, isValid } = autoDataValidator(req.body, expectedBodyData, requiredFields);
 
     //const { errors, isValid } = validateVendorDetails(req.body);
@@ -50,6 +50,7 @@ router.post( "/", passport.authenticate("jwt", { session: false }), async (req, 
         name: req.body.name,
         rDate: req.body.rDate,
         customer: req.body.customer,
+        order_id: req.body.order_id,
         vendor: req.user._id,
     })
 
@@ -73,8 +74,8 @@ router.post( "/", passport.authenticate("jwt", { session: false }), async (req, 
 // @access  Private
 router.put( "/", passport.authenticate("jwt", { session: false }), async (req, res) =>{
 
-    expectedBodyData = ['name', 'rDate', 'customer', '_id']
-    requiredFields = ['name', 'rDate', 'customer', '_id'] 
+    expectedBodyData = ['name', 'rDate', 'order_id', 'customer', '_id']
+    requiredFields = ['name', 'rDate', 'order_id', 'customer', '_id'] 
     const { errors, isValid } = autoDataValidator(req.body, expectedBodyData, requiredFields);
 
     //Check Validation
@@ -86,6 +87,7 @@ router.put( "/", passport.authenticate("jwt", { session: false }), async (req, r
         name: req.body.name,
         rDate: req.body.rDate,
         customer: req.body.customer,
+        order_id: req.body.order_id,
         vendor: req.user._id,
     })
 
@@ -222,7 +224,7 @@ router.post( "/completed", passport.authenticate("jwt", { session: false }), asy
 // @access  Private
 // router.put( "/completed", passport.authenticate("jwt", { session: false }), async (req, res) =>{
 
-//     expectedBodyData = ['name', 'sDate', 'orderId', '_id']
+//     expectedBodyData = ['name', 'sDate', 'order_id', '_id']
 //     requiredFields = ['name', 'sDate', '_id'] 
 //     const { errors, isValid } = autoDataValidator(req.body, expectedBodyData, requiredFields);
 
@@ -234,7 +236,7 @@ router.post( "/completed", passport.authenticate("jwt", { session: false }), asy
 //     const updateService = ({
 //         name: req.body.name,
 //         sDate: req.body.sDate,
-//         orderId: req.body.orderId,
+//         order_id: req.body.order_id,
 //         vendor: req.user._id,
 //     })
 

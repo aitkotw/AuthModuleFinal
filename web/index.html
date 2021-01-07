@@ -1,0 +1,176 @@
+<html>
+    <head>
+        <title>Home Page of some sort</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!-- Popper JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <style> 
+            .paneladd{
+                background-color: #007bff;
+                color: #fff;
+                margin-top: 30px;
+                padding: 10px;
+            }
+
+            /* Customize the label (the container) */
+            .chkContainer {
+                display: block;
+                position: relative;
+                padding-left: 35px;
+                margin-bottom: 12px;
+                cursor: pointer;
+                font-size: 18px;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+
+            /* Hide the browser's default checkbox */
+            .chkContainer input {
+                position: absolute;
+                opacity: 0;
+                cursor: pointer;
+                height: 0;
+                width: 0;
+            }
+
+            /* Create a custom checkbox */
+            .checkmark {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 25px;
+                width: 25px;
+                background-color: #eee;
+            }
+
+            /* On mouse-over, add a grey background color */
+            .chkContainer:hover input ~ .checkmark {
+                background-color: #ccc;
+            }
+
+            /* When the checkbox is checked, add a blue background */
+            .chkContainer input:checked ~ .checkmark {
+                background-color: #2196F3;
+            }
+
+            /* Create the checkmark/indicator (hidden when not checked) */
+            .checkmark:after {
+                content: "";
+                position: absolute;
+                display: none;
+            }
+
+            /* Show the checkmark when checked */
+            .chkContainer input:checked ~ .checkmark:after {
+                display: block;
+            }
+
+            /* Style the checkmark/indicator */
+            .chkContainer .checkmark:after {
+                left: 9px;
+                top: 5px;
+                width: 5px;
+                height: 10px;
+                border: solid white;
+                border-width: 0 3px 3px 0;
+                -webkit-transform: rotate(45deg);
+                -ms-transform: rotate(45deg);
+                transform: rotate(45deg);
+            }
+
+            @media only screen and (min-width: 576px) {
+
+                #tandcBtn{
+                    margin-left : -35px;
+                }
+
+            }
+        </style>
+    </head>
+    <body>
+        <div class="row">
+            <div class="container">
+               <div class="col-sm-12 shadow-lg">
+         
+                  <div class="row paneladd">
+                     <h2 class="mx-auto">AKDRON TECHNOLOGY</h2>
+                  </div>   
+               
+                  <div class="row">
+                     <div class="container px-3 pt-5 pb-3">
+                        <form name="custRegistration" method="post" action="" onsubmit="if(document.getElementById('checkbox').checked) { return true; } else { alert('please select checkbox to agree to our T&C'); return false; }">
+         
+                           <div class="form-group form-row">
+                              <div class="col-sm-6">
+                                 <label for="inputAddress">Enter Full Name</label>
+                                 <input type="text" class="form-control" name="name" placeholder="Enter Your Name" required>
+                              </div>
+         
+                              <div class="col-sm-6">
+                                 <label for="inputAddress">Contact No.</label>
+                                 <input type="phone" class="form-control" name="phone" pattern=".{10,10}" title="Must contain 10 Numbers" required placeholder="Enter Phone No.">
+                              </div>
+                           </div>
+         
+                           <div class="form-group mt-4">
+                              <div class="row">
+                                 <div class="col-sm-5">
+                                    <label class="chkContainer">Check here to indicate you've read and agree to 
+                                       <input type="checkbox" id = "checkbox" name = "checkbox" value = "true">
+                                       <span class="checkmark"></span>
+                                    </label>
+                                 </div>
+         
+                                 <div class="col-sm-2">
+                                    <button type="button" class="btn btn-link" id = "tandcBtn"  data-toggle="modal" data-target="#tandcModel" style = "padding:0px;">Terms and Condition</button> 
+                                 </div>
+                              </div>   
+                           </div>
+         
+                           <!-- The Modal -->
+                            <div class="modal" id="tandcModel">
+                                <div class="modal-dialog" style = "max-width: 900px;">
+                                    <div class="modal-content">
+                                    <!-- Modal Header -->
+                                    <div class="modal-header">
+                                    <h4 class="modal-title">Terms and Conditions</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+
+                                    <!-- Modal body -->
+                                    <div class="modal-body">
+                                        <div class="list-group">
+                                            <a href="#" class="list-group-item list-group-item-action ">We will contact you though means of email, phone or text messages to deliever certain services that you have requested.</a>   
+                                        </div> 
+                                    </div>
+
+                                    <!-- Modal footer -->
+                                    <div class="modal-footer"></div>
+                                    </div>
+                                </div>
+                            </div>
+         
+                           <div class="form-group d-flex justify-content-center">
+                              <button type="submit" class="btn btn-primary col-sm-4 btn-block">Submit </button>
+                           </div>
+                        </form>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         
+         </div>
+    </body>
+</html>
